@@ -2,6 +2,7 @@
 
 namespace Orh\LaravelGii;
 
+use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider as LaravelServiceProvider;
 
 class ServiceProvider extends LaravelServiceProvider
@@ -10,15 +11,13 @@ class ServiceProvider extends LaravelServiceProvider
 
     public function boot()
     {
-        if ($this->app->runningInConsole()) {
-            $this->publishes([
-                __DIR__.'/../config/gii.php' => config_path('gii.php'),
-            ], 'gii-config');
-        }
-    }
+        Route::group([
+            'namespace' => 'Orh\LaravelGii\Http\Controllers',
+            'middleware' => 'web',
+        ], function () {
+            $this->loadRoutesFrom(__DIR__ . '/../routes/web.php');
+        });
 
-    public function register()
-    {
-        $this->mergeConfigFrom(__DIR__.'/../config/gii.php', 'gii');
+        $this->loadViewsFrom(__DIR__ . '/../resources/views', 'gii');
     }
 }
