@@ -1,0 +1,32 @@
+{
+    "name": "orh/laravel-gii",
+    "description": "Laravel gii",
+    "keywords": [
+        "laravel",
+        "gii",
+        "laravel-gii",
+        "PHP"
+    ],
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "欧荣凰",
+            "email": "512574561@qq.com"
+        }
+    ],
+    "require": {
+        "php": ">=7.0.0"
+    },
+    "require-dev": {
+        "friendsofphp/php-cs-fixer": "~2.16.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "Orh\\LaravelGii\\": "src"
+        }
+    },
+    "scripts": {
+        "phpcs": "vendor/bin/php-cs-fixer fix"
+    }
+}
