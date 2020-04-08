@@ -28,5 +28,12 @@
     },
     "scripts": {
         "phpcs": "vendor/bin/php-cs-fixer fix"
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Orh\\LaravelGii\\ServiceProvider"
+            ]
+        }
     }
 }
