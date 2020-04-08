@@ -1,11 +1,64 @@
 <?php
 
-namespace DummyNamespace;
+namespace App\Http\ControllersDummyModule;
 
 use App\Http\Controllers\Controller;
+use App\Http\RequestsDummyModule\DummyRequest;
+use App\Http\ResourcesDummyModule\DummyResource;
+use App\Models\DummyModel;
 use Illuminate\Http\Request;
 
 class DummyClass extends Controller
 {
-    //
+    public function index(Request $request)
+    {
+        if ($request->ajax()) {
+            $list = DummyModel::latest();
+
+            $list = $list->paginate();
+
+            return DummyResource::collection($list);
+        }
+
+        return view('DummyView.index');
+    }
+
+    public function create(DummyModel $$DummyModel)
+    {
+        return view('DummyView.create_and_edit', compact('$DummyModel'));
+    }
+
+    public function store(DummyRequest $request)
+    {
+        $data = $request->only([
+            DummyColumns
+        ]);
+
+        DummyModel::create($data);
+
+        return '新增成功';
+    }
+
+    public function edit(DummyModel $DummyModel)
+    {
+        return view('DummyView.create_and_edit', compact('$DummyModel'));
+    }
+
+    public function update(DummyRequest $request, DummyModel $DummyModel)
+    {
+        $data = $request->only([
+            DummyColumns
+        ]);
+
+        $DummyModel->update($data);
+
+        return '编辑成功';
+    }
+
+    public function destroy(DummyModel $DummyModel)
+    {
+        $DummyModel->delete();
+
+        return '删除成功';
+    }
 }

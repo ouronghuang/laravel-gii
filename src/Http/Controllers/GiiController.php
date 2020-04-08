@@ -26,7 +26,7 @@ class GiiController
 
     protected function buildModel($table, $columns)
     {
-        $dummyClass = ucfirst(str_singular($table));
+        $dummyClass = studly_case(str_singular($table));
 
         $path = "app/Models/{$dummyClass}.php";
 
@@ -70,9 +70,9 @@ class GiiController
 
                 $tmp .= $v['nullable'] ? '->nullable()' : '';
 
-                $tmp .= $v['default'] ? "->default('{$v['default']}')" : '';
+                $tmp .= strlen($v['default']) ? "->default('{$v['default']}')" : '';
 
-                $tmp .= $v['comment'] ? "->comment('{$v['comment']}')" : '';
+                $tmp .= strlen($v['comment']) ? "->comment('{$v['comment']}')" : '';
 
                 $tmp .= ';';
 
