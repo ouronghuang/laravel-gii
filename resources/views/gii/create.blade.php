@@ -5,7 +5,7 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="csrf-token" content="{{ csrf_token() }}">
-  <title>Gii</title>
+  <title>Laravel Gii</title>
   <link href="https://cdn.bootcss.com/twitter-bootstrap/4.4.1/css/bootstrap.min.css" rel="stylesheet">
   <link href="https://cdn.bootcss.com/iview/3.5.4/styles/iview.css" rel="stylesheet">
   <style>
@@ -29,7 +29,9 @@
 </head>
 <body>
   <div id="app" v-cloak>
-    <h1 class="text-center my-5">Gii</h1>
+    <h1 class="text-center my-5">
+      Laravel Gii
+    </h1>
     <div>
       <div class="container">
         <i-form ref="formValidate" :model="formValidate" :rules="ruleValidate" label-position="top">
