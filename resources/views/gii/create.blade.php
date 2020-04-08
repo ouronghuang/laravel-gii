@@ -77,7 +77,7 @@
             </div>
             <div class="col-auto">
               <form-item label="唯一">
-                <i-switch size="large" v-model="v.unique">
+                <i-switch v-model="v.unique">
                   <span slot="open">是</span>
                   <span slot="close">否</span>
                 </i-switch>
@@ -85,7 +85,7 @@
             </div>
             <div class="col-auto">
               <form-item label="可空">
-                <i-switch size="large" v-model="v.nullable">
+                <i-switch v-model="v.nullable">
                   <span slot="open">是</span>
                   <span slot="close">否</span>
                 </i-switch>
@@ -93,7 +93,7 @@
             </div>
             <div class="col-auto">
               <form-item label="可写">
-                <i-switch size="large" v-model="v.writable">
+                <i-switch v-model="v.writable">
                   <span slot="open">是</span>
                   <span slot="close">否</span>
                 </i-switch>
