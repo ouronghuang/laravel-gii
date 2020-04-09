@@ -25,11 +25,11 @@ class GiiController
 
         $data = [];
 
-        $data[] = $this->buildModel($table, $columns);
+        // $data[] = $this->buildModel($table, $columns);
         $data[] = $this->buildMigration($table, $columns);
-        $data[] = $this->buildController($module, $table, $columns);
-        $data[] = $this->buildResource($module, $table, $columns);
-        $data[] = $this->buildRequest($module, $table, $columns);
+        // $data[] = $this->buildController($module, $table, $columns);
+        // $data[] = $this->buildResource($module, $table, $columns);
+        // $data[] = $this->buildRequest($module, $table, $columns);
 
         return $data;
     }
@@ -146,7 +146,11 @@ class GiiController
             })
             ->pluck('name')
             ->map(function ($v) {
-                return "        if (".'$request->input(\''.$v."')) {\n            ".'$data[\''.$v.'\'] = bcrypt($request->input(\''.$v.'\'));'."\n        }";
+                return <<<EOT
+        if (\$request->input('{$v}')) {
+            \$data['{$v}'] = bcrypt(\$request->input('{$v}'));
+        }
+EOT;
             })
             ->implode("\n\n");
 
@@ -263,7 +267,7 @@ class GiiController
 
                 $rule .= $v['unique'] ? "|unique:{$table},{$v['name']},'".'.$this->input(\'id\')' : "'";
 
-                $rule .= ",";
+                $rule .= ',';
 
                 return $rule;
             })
@@ -286,7 +290,7 @@ class GiiController
         ];
 
         $replace = [
-            $module ? "\\{$module}": '',
+            $module ? "\\{$module}" : '',
             $dummyClass,
             $rules,
             $attributes,
@@ -297,6 +301,19 @@ class GiiController
         $this->createStub('form-request', $path, $search, $replace);
 
         return $path;
+    }
+
+    /**
+     * 创建表单验证文件.
+     *
+     * @param string $module
+     * @param string $table
+     * @param array  $columns
+     *
+     * @return string
+     */
+    protected function buildViews($module, $table, $columns)
+    {
     }
 
     /**
