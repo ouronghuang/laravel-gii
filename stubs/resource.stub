@@ -1,0 +1,19 @@
+<?php
+
+namespace App\Http\ResourcesDummyModule;
+
+use Illuminate\Http\Resources\Json\Resource;
+
+class DummyClass extends Resource
+{
+    public function toArray($request)
+    {
+        return [
+            'id' => $this->id,
+            'edit' => route('DummyRoute.edit', $this),
+            'destroy' => route('DummyRoute.destroy', $this),
+            DummyColumns
+            'created_at' => has_method($this->created_at),
+        ];
+    }
+}

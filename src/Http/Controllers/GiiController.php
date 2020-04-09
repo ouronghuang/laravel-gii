@@ -26,6 +26,7 @@ class GiiController
         $this->buildModel($table, $columns);
         // $this->buildMigration($table, $columns);
         $this->buildController($module, $table, $columns);
+        $this->buildResource($module, $table, $columns);
     }
 
     /**
@@ -162,11 +163,55 @@ class GiiController
             $dummyModel,
             camel_case($dummyModel),
             $dummyClass,
-            ($module ? "{$module}." : '')."{$table}",
+            ($module ? "{$module}." : '').$table,
             $columns,
         ];
 
         $this->createStub('controller', $path, $search, $replace);
+
+        return $path;
+    }
+
+    /**
+     * 创建资源文件.
+     *
+     * @param string $module
+     * @param string $table
+     * @param array  $columns
+     *
+     * @return string
+     */
+    protected function buildResource($module, $table, $columns)
+    {
+        $dummyClass = studly_case(str_singular($table)).'Resource';
+
+        $path = 'app/Http/Resources/'.($module ? ucfirst($module).'/' : '')."{$dummyClass}.php";
+
+        $columns = collect($columns)
+            ->filter(function ($v) {
+                return $v['name'] != 'password';
+            })
+            ->pluck('name')
+            ->map(function ($v) {
+                return "'{$v}' => ".'$this->'."{$v},";
+            })
+            ->implode("\n            ");
+
+        $search = [
+            'DummyModule',
+            'DummyClass',
+            'DummyRoute',
+            'DummyColumns',
+        ];
+
+        $replace = [
+            $module ? '\\'.ucfirst($module) : '',
+            $dummyClass,
+            ($module ? "{$module}." : '').$table,
+            $columns,
+        ];
+
+        $this->createStub('resource', $path, $search, $replace);
 
         return $path;
     }
