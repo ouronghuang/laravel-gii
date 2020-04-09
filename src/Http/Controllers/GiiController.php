@@ -23,9 +23,9 @@ class GiiController
                 return $v;
             });
 
-        $this->buildModel($table, $columns);
+        // $this->buildModel($table, $columns);
         // $this->buildMigration($table, $columns);
-        $this->buildController($module, $table, $columns);
+        // $this->buildController($module, $table, $columns);
         $this->buildResource($module, $table, $columns);
     }
 
@@ -189,7 +189,7 @@ class GiiController
 
         $columns = collect($columns)
             ->filter(function ($v) {
-                return $v['name'] != 'password';
+                return $v['readable'];
             })
             ->pluck('name')
             ->map(function ($v) {

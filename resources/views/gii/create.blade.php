@@ -76,7 +76,7 @@
               </form-item>
             </div>
             <div class="col-auto">
-              <form-item label="唯一">
+              <form-item label="唯一" title="表单验证 (Request)">
                 <i-switch v-model="v.unique">
                   <span slot="open">是</span>
                   <span slot="close">否</span>
@@ -92,8 +92,24 @@
               </form-item>
             </div>
             <div class="col-auto">
-              <form-item label="可写">
+              <form-item label="可写" title="模型 (Model)">
                 <i-switch v-model="v.writable">
+                  <span slot="open">是</span>
+                  <span slot="close">否</span>
+                </i-switch>
+              </form-item>
+            </div>
+            <div class="col-auto">
+              <form-item label="可读" title="资源 (Resource)">
+                <i-switch v-model="v.readable">
+                  <span slot="open">是</span>
+                  <span slot="close">否</span>
+                </i-switch>
+              </form-item>
+            </div>
+            <div class="col-auto">
+              <form-item label="密码" title="表单验证 (Request) | 控制器 (Controller)">
+                <i-switch v-model="v.password">
                   <span slot="open">是</span>
                   <span slot="close">否</span>
                 </i-switch>
@@ -246,6 +262,8 @@
             unique: false,
             nullable: false,
             writable: true,
+            readable: true,
+            password: false,
             default: '',
             comment: ''
           };
