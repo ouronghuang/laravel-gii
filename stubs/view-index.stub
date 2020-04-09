@@ -1,0 +1,78 @@
+@extends('DummyModule.layouts.app')
+
+@section('title', 'DummyComment管理')
+
+@section('content')
+  <v-DummyModule-DummyTable inline-template>
+    <div>
+      <div class="row">
+        <div class="col">
+          <i-button type="primary" to="{{ route('DummyModule.DummyTable.create') }}">新增</i-button>
+        </div>
+        <div class="col-auto">
+          <i-input icon="ios-search" clearable v-model="search.k" @on-change="getList" placeholder="请输入关键字"></i-input>
+        </div>
+      </div>
+      <card class="my-3">
+        <checkbox-group v-model="checkAllGroup" @on-change="checkAllGroupChange">
+          <div class="table-responsive">
+            <table class="table table-hover">
+              <thead>
+                <tr>
+                  <th scope="col">
+                    <checkbox
+                      :indeterminate="indeterminate"
+                      :value="checkAll"
+                      @click.prevent.native="handleCheckAll">
+                      ID
+                    </checkbox>
+                  </th>
+                  DummyHeads
+                  <th scope="col">创建于</th>
+                  <th scope="col">操作</th>
+                </tr>
+              </thead>
+              <tbody v-if="list.length">
+                <tr v-for="v in list" :key="v.id">
+                  <td>
+                    <checkbox :label="v.id">
+                      @{{ v.id }}
+                    </checkbox>
+                  </td>
+                  DummyBodies
+                  <td>@{{ v.created_at }}</td>
+                  <td>
+                    <i-button size="small" type="info" :to="v.edit">编辑</i-button>
+                    <poptip
+                      confirm
+                      title="确认删除？"
+                      @on-ok="handleDestroy(v)">
+                      <i-button size="small" type="error">删除</i-button>
+                    </poptip>
+                  </td>
+                </tr>
+              </tbody>
+              <tbody v-else>
+                <tr>
+                  <td class="text-center" colspan="6">暂无数据</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </checkbox-group>
+      </card>
+      <div class="row align-items-center">
+        <div class="col">
+          <page :current="paginate.current" :total="paginate.total" :page-size="paginate.per_page" simple @on-change="getList"></page>
+        </div>
+        <div class="col-auto">
+          共
+          @{{ paginate.last_page }}
+          页,
+          @{{ paginate.total }}
+          条记录
+        </div>
+      </div>
+    </div>
+  </v-DummyModule-DummyTable>
+@endsection

@@ -50,6 +50,11 @@
               <i-input v-model="formValidate.table" placeholder="请输入表名" clearable></i-input>
             </form-item>
           </div>
+          <div class="col">
+            <form-item label="表注释" prop="comment">
+              <i-input v-model="formValidate.comment" placeholder="请输入表注释" clearable></i-input>
+            </form-item>
+          </div>
         </div>
         <card class="mb-3" v-for="(v, k) in formValidate.columns" :key="k">
           <div slot="title">
@@ -225,10 +230,12 @@
         formValidate: {
           module: 'admin',
           table: '',
+          comment: '',
           columns: []
         },
         ruleValidate: {
-          table: {required: true, message: '请输入表名', trigger: 'change'}
+          table: {required: true, message: '请输入表名', trigger: 'change'},
+          comment: {required: true, message: '请输入表注释', trigger: 'change'}
         },
         columnTypes: [
           'string',
@@ -287,7 +294,7 @@
           'softDeletes',
           'softDeletesTz'
         ],
-        list: [],
+        list: []
       },
       mounted() {
         axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
@@ -304,6 +311,8 @@
               axios
                 .post('/gii', this.formValidate)
                 .then(({data}) => {
+                  this.$Message.success('执行成功');
+
                   this.list = data;
 
                   this.loading = false;
@@ -330,7 +339,7 @@
             default: '',
             comment: '',
             validation: true,
-            rules: 'required|string',
+            rules: 'required|string'
           };
         },
         addColumn() {

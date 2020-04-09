@@ -16,6 +16,7 @@ class GiiController
     {
         $module = strtolower($request->input('module'));
         $table = strtolower($request->input('table'));
+        $comment = strtolower($request->input('comment'));
         $columns = collect($request->input('columns'))
             ->map(function ($v) {
                 $v['name'] = strtolower($v['name']);
@@ -26,10 +27,11 @@ class GiiController
         $data = [];
 
         // $data[] = $this->buildModel($table, $columns);
-        $data[] = $this->buildMigration($table, $columns);
+        // $data[] = $this->buildMigration($table, $columns);
         // $data[] = $this->buildController($module, $table, $columns);
         // $data[] = $this->buildResource($module, $table, $columns);
         // $data[] = $this->buildRequest($module, $table, $columns);
+        $data[] = $this->buildViewIndex($module, $table, $comment, $columns);
 
         return $data;
     }
@@ -304,16 +306,58 @@ EOT;
     }
 
     /**
-     * 创建表单验证文件.
+     * 创建视图列表文件.
      *
      * @param string $module
      * @param string $table
+     * @param string $comment
      * @param array  $columns
      *
      * @return string
      */
-    protected function buildViews($module, $table, $columns)
+    protected function buildViewIndex($module, $table, $comment, $columns)
     {
+        $path = "resources/views/{$module}/{$table}/index.blade.php";
+
+        $search = [
+            'DummyModule',
+            'DummyComment',
+            'DummyTable',
+            'DummyHeads',
+            'DummyBodies',
+        ];
+
+        $heads = collect($columns)
+            ->filter(function ($v) {
+                return $v['readable'];
+            })
+            ->pluck('comment')
+            ->map(function ($v) {
+                return "<th scope=\"col\">{$v}</th>";
+            })
+            ->implode("\n                  ");
+
+        $bodies = collect($columns)
+            ->filter(function ($v) {
+                return $v['readable'];
+            })
+            ->pluck('name')
+            ->map(function ($v) {
+                return "<td>@{{ v.{$v} }}</td>";
+            })
+            ->implode("\n                  ");
+
+        $replace = [
+            $module,
+            $comment,
+            $table,
+            $heads,
+            $bodies,
+        ];
+
+        $this->createStub('view-index', $path, $search, $replace);
+
+        return $path;
     }
 
     /**
