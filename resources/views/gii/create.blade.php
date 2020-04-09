@@ -153,16 +153,23 @@
                 </i-switch>
               </form-item>
             </div>
-            <div class="col">
-              <form-item label="密码" title="表单验证 (Request) | 控制器 (Controller)">
-                <i-switch v-model="v.password">
-                  <span slot="open">是</span>
-                  <span slot="close">否</span>
-                </i-switch>
-              </form-item>
-            </div>
           </div>
           <div class="row">
+            <div class="col-auto">
+              <form-item>
+                <span slot="label">
+                  表单类型
+                  <a href="http://v3.iviewui.com/components/input#Input_props" target="_blank">
+                    (可用的表单类型)
+                  </a>
+                </span>
+                <i-select placeholder="请选择表单类型" v-model="v.formType">
+                  <i-option :value="type" v-for="type in formTypes" :key="type">
+                    @{{ type }}
+                  </i-option>
+                </i-select>
+              </form-item>
+            </div>
             <div class="col-auto">
               <form-item class="mb-0" label="表单验证" title="表单验证 (Request)">
                 <i-switch v-model="v.validation">
@@ -294,6 +301,12 @@
           'softDeletes',
           'softDeletesTz'
         ],
+        formTypes: [
+          'text',
+          'password',
+          'number',
+          'file',
+        ],
         list: []
       },
       mounted() {
@@ -335,10 +348,10 @@
             nullable: false,
             writable: true,
             readable: true,
-            password: false,
             default: '',
             comment: '',
             validation: true,
+            formType: 'text',
             rules: 'required|string'
           };
         },

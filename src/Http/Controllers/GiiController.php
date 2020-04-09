@@ -31,7 +31,8 @@ class GiiController
         // $data[] = $this->buildController($module, $table, $columns);
         // $data[] = $this->buildResource($module, $table, $columns);
         // $data[] = $this->buildRequest($module, $table, $columns);
-        $data[] = $this->buildViewIndex($module, $table, $comment, $columns);
+        // $data[] = $this->buildViewIndex($module, $table, $comment, $columns);
+        $data[] = $this->buildViewAction($module, $table, $comment, $columns);
 
         return $data;
     }
@@ -144,7 +145,7 @@ class GiiController
 
         $password = collect($columns)
             ->filter(function ($v) {
-                return $v['password'];
+                return $v['formType'] == 'password';
             })
             ->pluck('name')
             ->map(function ($v) {
@@ -160,7 +161,7 @@ EOT;
 
         $columns = collect($columns)
             ->filter(function ($v) {
-                return $v['writable'] && !$v['password'];
+                return $v['writable'] && $v['formType'] != 'password';
             })
             ->pluck('name')
             ->map(function ($v) {
@@ -356,6 +357,88 @@ EOT;
         ];
 
         $this->createStub('view-index', $path, $search, $replace);
+
+        return $path;
+    }
+
+    /**
+     * 创建视图操作文件.
+     *
+     * @param string $module
+     * @param string $table
+     * @param string $comment
+     * @param array  $columns
+     *
+     * @return string
+     */
+    protected function buildViewAction($module, $table, $comment, $columns)
+    {
+        $path = "resources/views/{$module}/{$table}/create_and_edit.blade.php";
+
+        $model = camel_case(str_singular($table));
+
+        $search = [
+            'DummyModule',
+            'DummyModel',
+            'DummyComment',
+            'DummyTable',
+            'DummyForms',
+        ];
+
+        $forms = collect($columns)
+            ->filter(function ($v) {
+                return $v['writable'];
+            })
+            ->map(function ($v) use ($model) {
+                if ($v['formType'] == 'password') {
+                    $form = <<<EOT
+          <form-item label="{$v['comment']}" prop="{{ \${$model}->id ? '' : '{$v['name']}' }}">
+            <i-input type="password" v-model="formValidate.{$v['name']}" placeholder="{{ \${$model}->id ? '为空则不修改' : '请输入{$v['comment']}' }}" clearable></i-input>
+          </form-item>
+EOT;
+                } elseif ($v['formType'] == 'number') {
+                    $form = <<<EOT
+          <form-item label="{$v['comment']}" prop="{$v['name']}">
+            <input-number :min="0" v-model="formValidate.{$v['name']}" class="w-100"></input-number>
+          </form-item>
+EOT;
+                } elseif ($v['formType'] == 'file') {
+                    $form = <<<EOT
+          <form-item label="{$v['comment']}">
+            <input ref="{$v['name']}" class="d-none" type="file" @change="e => handleFileChange(e, '{$v['name']}')">
+            <i-input v-model="formValidate.{$v['name']}" placeholder="请输入{$v['comment']}地址或选择上传文件">
+              <icon class="cp" type="md-cloud-upload" slot="suffix" @click="\$refs.{$v['name']}.click()"></icon>
+            </i-input>
+          </form-item>
+          <form-item label="{$v['comment']}预览" v-if="formValidate.{$v['name']}">
+            <a :href="formValidate.{$v['name']}" target="_blank">
+              @{{ formValidate.{$v['name']} }}
+            </a>
+          </form-item>
+EOT;
+                } else {
+                    $form = <<<EOT
+          <form-item label="{$v['comment']}" prop="{$v['name']}">
+            <i-input v-model="formValidate.{$v['name']}" placeholder="请输入{$v['comment']}" clearable></i-input>
+          </form-item>
+EOT;
+                }
+
+                return $form;
+            })
+            ->implode("\n");
+
+        $forms = "\n{$forms}\n";
+
+        $replace = [
+            $module,
+            $model,
+            $comment,
+            $table,
+            $forms,
+        ];
+
+        $this->createStub('view-action', $path, $search, $replace);
 
         return $path;
     }
