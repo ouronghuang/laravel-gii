@@ -23,11 +23,15 @@ class GiiController
                 return $v;
             });
 
-        $this->buildModel($table, $columns);
-        $this->buildMigration($table, $columns);
-        $this->buildController($module, $table, $columns);
-        $this->buildResource($module, $table, $columns);
-        $this->buildRequest($module, $table, $columns);
+        $data = [];
+
+        $data[] = $this->buildModel($table, $columns);
+        $data[] = $this->buildMigration($table, $columns);
+        $data[] = $this->buildController($module, $table, $columns);
+        $data[] = $this->buildResource($module, $table, $columns);
+        $data[] = $this->buildRequest($module, $table, $columns);
+
+        return $data;
     }
 
     /**

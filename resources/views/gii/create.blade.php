@@ -196,6 +196,19 @@
           </div>
         </div>
       </i-form>
+      <div class="mb-4" v-if="list.length">
+        <alert>
+          共生成
+          @{{ list.length }}
+          个文件
+        </alert>
+        <div class="mb-2" v-for="(v, k) in list" :key="k">
+          <kbd>
+            @{{ k + 1 }}.
+            @{{ v }}
+          </kbd>
+        </div>
+      </div>
     </div>
     <div>
       <back-top :bottom="8" :right="8"/>
@@ -273,7 +286,8 @@
           'rememberToken',
           'softDeletes',
           'softDeletesTz'
-        ]
+        ],
+        list: [],
       },
       mounted() {
         axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
@@ -290,6 +304,7 @@
               axios
                 .post('/gii', this.formValidate)
                 .then(({data}) => {
+                  this.list = data;
 
                   this.loading = false;
                 })
@@ -298,6 +313,8 @@
 
                   this.loading = false;
                 });
+            } else {
+              this.$Message.error('请完善表单信息');
             }
           });
         },
