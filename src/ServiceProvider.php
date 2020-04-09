@@ -15,9 +15,9 @@ class ServiceProvider extends LaravelServiceProvider
             'namespace' => 'Orh\LaravelGii\Http\Controllers',
             'middleware' => 'web',
         ], function () {
-            $this->loadRoutesFrom(__DIR__ . '/../routes/web.php');
+            $this->loadRoutesFrom(__DIR__.'/../routes/web.php');
         });
 
-        $this->loadViewsFrom(__DIR__ . '/../resources/views', 'gii');
+        $this->loadViewsFrom(__DIR__.'/../resources/views', 'gii');
     }
 }

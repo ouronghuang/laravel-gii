@@ -12,7 +12,7 @@ class GiiController
         return view('gii::gii.create');
     }
 
-    public function store(Request $request, Filesystem $file)
+    public function store(Request $request)
     {
         $module = strtolower($request->input('module'));
         $table = strtolower($request->input('table'));
@@ -26,10 +26,16 @@ class GiiController
         $this->buildModel($table, $columns);
         // $this->buildMigration($table, $columns);
         $this->buildController($module, $table, $columns);
-
-        return;
     }
 
+    /**
+     * 创建模型文件.
+     *
+     * @param string $table
+     * @param array  $columns
+     *
+     * @return string
+     */
     protected function buildModel($table, $columns)
     {
         $dummyClass = studly_case(str_singular($table));
@@ -61,6 +67,14 @@ class GiiController
         return $path;
     }
 
+    /**
+     * 创建迁移文件.
+     *
+     * @param string $table
+     * @param array  $columns
+     *
+     * @return string
+     */
     protected function buildMigration($table, $columns)
     {
         $timestamp = date('Y_m_d_His');
@@ -70,7 +84,7 @@ class GiiController
 
         $columns = collect($columns)
             ->map(function ($v) {
-                $tmp = '$table->' . "{$v['type']}('{$v['name']}')";
+                $tmp = '$table->'."{$v['type']}('{$v['name']}')";
 
                 $tmp .= $v['unique'] ? '->unique()' : '';
 
@@ -103,13 +117,22 @@ class GiiController
         return $path;
     }
 
+    /**
+     * 创建控制器文件.
+     *
+     * @param string $module
+     * @param string $table
+     * @param array  $columns
+     *
+     * @return string
+     */
     protected function buildController($module, $table, $columns)
     {
         $dummyModel = studly_case(str_singular($table));
 
-        $dummyClass = str_plural($dummyModel) . 'Controller';
+        $dummyClass = str_plural($dummyModel).'Controller';
 
-        $path = 'app/Http/Controllers/' . ($module ? ucfirst($module) . '/' : '') . "{$dummyClass}.php";
+        $path = 'app/Http/Controllers/'.($module ? ucfirst($module).'/' : '')."{$dummyClass}.php";
 
         $columns = collect($columns)
             ->filter(function ($v) {
@@ -133,13 +156,13 @@ class GiiController
         ];
 
         $replace = [
-            $module ? '\\' . ucfirst($module) : '',
+            $module ? '\\'.ucfirst($module) : '',
             "{$dummyModel}Request",
             "{$dummyModel}Resource",
             $dummyModel,
             camel_case($dummyModel),
             $dummyClass,
-            ($module ? "{$module}." : '') . "{$table}",
+            ($module ? "{$module}." : '')."{$table}",
             $columns,
         ];
 
@@ -148,6 +171,16 @@ class GiiController
         return $path;
     }
 
+    /**
+     * 生成相应文件.
+     *
+     * @param string $type
+     * @param string $path
+     * @param array  $search
+     * @param array  $replace
+     *
+     * @return void
+     */
     protected function createStub($type, $path, $search, $replace)
     {
         $file = app(Filesystem::class);
@@ -158,13 +191,20 @@ class GiiController
 
         $this->mkdir($path);
 
-        $stub = $file->get(__DIR__ . "/../../../stubs/{$type}.stub");
+        $stub = $file->get(__DIR__."/../../../stubs/{$type}.stub");
 
         $stub = str_replace($search, $replace, $stub);
 
         $file->put($path, $stub);
     }
 
+    /**
+     * 创建文件夹.
+     *
+     * @param string $path
+     *
+     * @return bool
+     */
     protected function mkdir($path)
     {
         $directory = dirname($path);
