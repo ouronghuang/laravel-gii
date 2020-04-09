@@ -148,7 +148,7 @@
       data: {
         loading: false,
         formValidate: {
-          module: '',
+          module: 'admin',
           table: '',
           columns: []
         },
