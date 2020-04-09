@@ -27,6 +27,7 @@ class GiiController
         $this->buildMigration($table, $columns);
         $this->buildController($module, $table, $columns);
         $this->buildResource($module, $table, $columns);
+        $this->buildRequest($module, $table, $columns);
     }
 
     /**
@@ -231,6 +232,70 @@ class GiiController
     }
 
     /**
+     * 创建表单验证文件.
+     *
+     * @param string $module
+     * @param string $table
+     * @param array  $columns
+     *
+     * @return string
+     */
+    protected function buildRequest($module, $table, $columns)
+    {
+        $module = ucfirst($module);
+
+        $dummyClass = studly_case(str_singular($table)).'Request';
+
+        $base = 'app/Http/Requests'.($module ? "/{$module}" : '');
+        $path = "{$base}/{$dummyClass}.php";
+        $pathFormRequest = "{$base}/FormRequest.php";
+
+        $rules = collect($columns)
+            ->filter(function ($v) {
+                return $v['validation'];
+            })
+            ->map(function ($v) use ($table) {
+                $rule = "'{$v['name']}' => '{$v['rules']}";
+
+                $rule .= $v['unique'] ? "|unique:{$table},{$v['name']},'".'.$this->input(\'id\')' : "'";
+
+                $rule .= ",";
+
+                return $rule;
+            })
+            ->implode("\n            ");
+
+        $attributes = collect($columns)
+            ->filter(function ($v) {
+                return $v['validation'];
+            })
+            ->map(function ($v) {
+                return "'{$v['name']}' => '{$v['comment']}',";
+            })
+            ->implode("\n            ");
+
+        $search = [
+            'DummyModule',
+            'DummyClass',
+            'DummyRule',
+            'DummyAttribute',
+        ];
+
+        $replace = [
+            $module ? "\\{$module}": '',
+            $dummyClass,
+            $rules,
+            $attributes,
+        ];
+
+        $this->createStub('form-request-base', $pathFormRequest, $search, $replace);
+
+        $this->createStub('form-request', $path, $search, $replace);
+
+        return $path;
+    }
+
+    /**
      * 生成相应文件.
      *
      * @param string $type
@@ -240,7 +305,7 @@ class GiiController
      *
      * @return void
      */
-    protected function createStub($type, $path, $search, $replace)
+    protected function createStub($type, $path, $search = [], $replace = [])
     {
         $file = app(Filesystem::class);
 

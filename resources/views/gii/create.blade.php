@@ -51,8 +51,28 @@
             </form-item>
           </div>
         </div>
-        <div>
-          <div class="row align-items-center" v-for="(v, k) in formValidate.columns" :key="k">
+        <card class="mb-3" v-for="(v, k) in formValidate.columns" :key="k">
+          <div slot="title">
+            <div class="row align-items-center">
+              <div class="col">
+                字段:
+                <kbd>
+                  @{{ v.name }}
+                </kbd>
+              </div>
+              <div class="col-auto">
+                <poptip
+                  confirm
+                  title="确认删除？"
+                  @on-ok="delColumn(k)">
+                  <i-button type="error" size="small">
+                    删除
+                  </i-button>
+                </poptip>
+              </div>
+            </div>
+          </div>
+          <div class="row">
             <div class="col">
               <form-item
                 label="字段名"
@@ -64,55 +84,20 @@
             </div>
             <div class="col">
               <form-item
-                label="类型"
                 :prop="`columns.${k}.type`"
                 :rules="{required: true, message: '请选择类型', trigger: 'change'}"
               >
+                <span slot="label">
+                  类型
+                  <a href="https://learnku.com/docs/laravel/5.5/migrations/1329#b419dd" target="_blank">
+                    (可用的字段类型)
+                  </a>
+                </span>
                 <i-select placeholder="请选择类型" v-model="v.type">
                   <i-option :value="type" v-for="type in columnTypes" :key="type">
                     @{{ type }}
                   </i-option>
                 </i-select>
-              </form-item>
-            </div>
-            <div class="col-auto">
-              <form-item label="唯一" title="表单验证 (Request)">
-                <i-switch v-model="v.unique">
-                  <span slot="open">是</span>
-                  <span slot="close">否</span>
-                </i-switch>
-              </form-item>
-            </div>
-            <div class="col-auto">
-              <form-item label="可空">
-                <i-switch v-model="v.nullable">
-                  <span slot="open">是</span>
-                  <span slot="close">否</span>
-                </i-switch>
-              </form-item>
-            </div>
-            <div class="col-auto">
-              <form-item label="可写" title="模型 (Model)">
-                <i-switch v-model="v.writable">
-                  <span slot="open">是</span>
-                  <span slot="close">否</span>
-                </i-switch>
-              </form-item>
-            </div>
-            <div class="col-auto">
-              <form-item label="可读" title="资源 (Resource)">
-                <i-switch v-model="v.readable">
-                  <span slot="open">是</span>
-                  <span slot="close">否</span>
-                </i-switch>
-              </form-item>
-            </div>
-            <div class="col-auto">
-              <form-item label="密码" title="表单验证 (Request) | 控制器 (Controller)">
-                <i-switch v-model="v.password">
-                  <span slot="open">是</span>
-                  <span slot="close">否</span>
-                </i-switch>
               </form-item>
             </div>
             <div class="col">
@@ -121,34 +106,95 @@
               </form-item>
             </div>
             <div class="col">
-              <form-item label="注释">
-                <i-input v-model="v.comment" placeholder="可不填" clearable></i-input>
-              </form-item>
-            </div>
-            <div class="col-auto">
-              <form-item label="操作">
-                <poptip
-                  confirm
-                  title="确认删除？"
-                  @on-ok="delColumn(k)">
-                  <i-button type="error">
-                    删除
-                  </i-button>
-                </poptip>
+              <form-item
+                label="注释"
+                :prop="`columns.${k}.comment`"
+                :rules="{required: true, message: '请输入注释', trigger: 'change'}"
+              >
+                <i-input v-model="v.comment" placeholder="请输入注释" clearable></i-input>
               </form-item>
             </div>
           </div>
-          <form-item>
-            <i-button type="dashed" long @click="addColumn">
-              新增字段
-            </i-button>
-          </form-item>
+          <div class="row">
+            <div class="col">
+              <form-item label="唯一" title="表单验证 (Request)">
+                <i-switch v-model="v.unique">
+                  <span slot="open">是</span>
+                  <span slot="close">否</span>
+                </i-switch>
+              </form-item>
+            </div>
+            <div class="col">
+              <form-item label="可空">
+                <i-switch v-model="v.nullable">
+                  <span slot="open">是</span>
+                  <span slot="close">否</span>
+                </i-switch>
+              </form-item>
+            </div>
+            <div class="col">
+              <form-item label="可写" title="模型 (Model)">
+                <i-switch v-model="v.writable">
+                  <span slot="open">是</span>
+                  <span slot="close">否</span>
+                </i-switch>
+              </form-item>
+            </div>
+            <div class="col">
+              <form-item label="可读" title="资源 (Resource)">
+                <i-switch v-model="v.readable">
+                  <span slot="open">是</span>
+                  <span slot="close">否</span>
+                </i-switch>
+              </form-item>
+            </div>
+            <div class="col">
+              <form-item label="密码" title="表单验证 (Request) | 控制器 (Controller)">
+                <i-switch v-model="v.password">
+                  <span slot="open">是</span>
+                  <span slot="close">否</span>
+                </i-switch>
+              </form-item>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-auto">
+              <form-item class="mb-0" label="表单验证" title="表单验证 (Request)">
+                <i-switch v-model="v.validation">
+                  <span slot="open">是</span>
+                  <span slot="close">否</span>
+                </i-switch>
+              </form-item>
+            </div>
+            <div class="col">
+              <form-item class="mb-0" title="表单验证 (Request)">
+                <span slot="label">
+                  验证规则
+                  <a href="https://learnku.com/docs/laravel/5.5/validation/1302#189a36" target="_blank">
+                    (可用的验证规则)
+                  </a>
+                </span>
+                <i-input v-model="v.rules" :disabled="!v.validation" clearable></i-input>
+              </form-item>
+            </div>
+          </div>
+        </card>
+        <div class="row">
+          <div class="col">
+            <form-item>
+              <i-button type="dashed" @click="addColumn" long>
+                新增字段
+              </i-button>
+            </form-item>
+          </div>
+          <div class="col">
+            <form-item>
+              <i-button type="primary" @click="handleSubmit" :loading="loading" long>
+                提交
+              </i-button>
+            </form-item>
+          </div>
         </div>
-        <form-item>
-          <i-button type="primary" long @click="handleSubmit" :loading="loading">
-            提交
-          </i-button>
-        </form-item>
       </i-form>
     </div>
     <div>
@@ -265,7 +311,9 @@
             readable: true,
             password: false,
             default: '',
-            comment: ''
+            comment: '',
+            validation: true,
+            rules: 'required|string',
           };
         },
         addColumn() {

@@ -1,0 +1,20 @@
+<?php
+
+namespace App\Http\RequestsDummyModule;
+
+class DummyClass extends FormRequest
+{
+    public function rules()
+    {
+        return [
+            DummyRule
+        ];
+    }
+
+    public function attributes()
+    {
+        return [
+            DummyAttribute
+        ];
+    }
+}
