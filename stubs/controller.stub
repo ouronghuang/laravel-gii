@@ -23,9 +23,9 @@ class DummyClass extends Controller
         return view('DummyView.index');
     }
 
-    public function create(DummyModel $$DummyModel)
+    public function create(DummyModel $dummyModel)
     {
-        return view('DummyView.create_and_edit', compact('$DummyModel'));
+        return view('DummyView.create_and_edit', compact('dummyModel'));
     }
 
     public function store(DummyRequest $request)
@@ -39,25 +39,25 @@ class DummyClass extends Controller
         return '新增成功';
     }
 
-    public function edit(DummyModel $DummyModel)
+    public function edit(DummyModel $dummyModel)
     {
-        return view('DummyView.create_and_edit', compact('$DummyModel'));
+        return view('DummyView.create_and_edit', compact('dummyModel'));
     }
 
-    public function update(DummyRequest $request, DummyModel $DummyModel)
+    public function update(DummyRequest $request, DummyModel $dummyModel)
     {
         $data = $request->only([
             DummyColumns
         ]);
 
-        $DummyModel->update($data);
+        $dummyModel->update($data);
 
         return '编辑成功';
     }
 
-    public function destroy(DummyModel $DummyModel)
+    public function destroy(DummyModel $dummyModel)
     {
-        $DummyModel->delete();
+        $dummyModel->delete();
 
         return '删除成功';
     }
