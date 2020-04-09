@@ -23,9 +23,9 @@ class GiiController
                 return $v;
             });
 
-        // $this->buildModel($table, $columns);
-        // $this->buildMigration($table, $columns);
-        // $this->buildController($module, $table, $columns);
+        $this->buildModel($table, $columns);
+        $this->buildMigration($table, $columns);
+        $this->buildController($module, $table, $columns);
         $this->buildResource($module, $table, $columns);
     }
 
@@ -135,9 +135,21 @@ class GiiController
 
         $path = 'app/Http/Controllers/'.($module ? ucfirst($module).'/' : '')."{$dummyClass}.php";
 
+        $password = collect($columns)
+            ->filter(function ($v) {
+                return $v['password'];
+            })
+            ->pluck('name')
+            ->map(function ($v) {
+                return "        if (".'$request->input(\''.$v."')) {\n            ".'$data[\''.$v.'\'] = bcrypt($request->input(\''.$v.'\'));'."\n        }";
+            })
+            ->implode("\n\n");
+
+        $password = "\n{$password}\n";
+
         $columns = collect($columns)
             ->filter(function ($v) {
-                return $v['writable'];
+                return $v['writable'] && !$v['password'];
             })
             ->pluck('name')
             ->map(function ($v) {
@@ -154,6 +166,7 @@ class GiiController
             'DummyClass',
             'DummyView',
             'DummyColumns',
+            'DummyPassword',
         ];
 
         $replace = [
@@ -165,6 +178,7 @@ class GiiController
             $dummyClass,
             ($module ? "{$module}." : '').$table,
             $columns,
+            $password,
         ];
 
         $this->createStub('controller', $path, $search, $replace);

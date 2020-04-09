@@ -33,7 +33,7 @@ class DummyClass extends Controller
         $data = $request->only([
             DummyColumns
         ]);
-
+        DummyPassword
         DummyModel::create($data);
 
         return '新增成功';
@@ -49,7 +49,7 @@ class DummyClass extends Controller
         $data = $request->only([
             DummyColumns
         ]);
-
+        DummyPassword
         $dummyModel->update($data);
 
         return '编辑成功';
