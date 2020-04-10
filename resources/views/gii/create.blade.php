@@ -163,7 +163,7 @@
                     (可用的表单类型)
                   </a>
                 </span>
-                <i-select placeholder="请选择表单类型" v-model="v.formType">
+                <i-select placeholder="请选择表单类型" v-model="v.form_type">
                   <i-option :value="type" v-for="type in formTypes" :key="type">
                     @{{ type }}
                   </i-option>
@@ -351,7 +351,7 @@
             default: '',
             comment: '',
             validation: true,
-            formType: 'text',
+            form_type: 'text',
             rules: 'required|string'
           };
         },

@@ -31,7 +31,7 @@ class GiiController
         // $data[] = $this->buildController($module, $table, $columns);
         // $data[] = $this->buildResource($module, $table, $columns);
         // $data[] = $this->buildRequest($module, $table, $columns);
-        // $data[] = $this->buildViewIndex($module, $table, $comment, $columns);
+        $data[] = $this->buildViewIndex($module, $table, $comment, $columns);
         $data[] = $this->buildViewAction($module, $table, $comment, $columns);
 
         return $data;
@@ -145,7 +145,7 @@ class GiiController
 
         $password = collect($columns)
             ->filter(function ($v) {
-                return $v['formType'] == 'password';
+                return $v['form_type'] == 'password';
             })
             ->pluck('name')
             ->map(function ($v) {
@@ -161,7 +161,7 @@ EOT;
 
         $columns = collect($columns)
             ->filter(function ($v) {
-                return $v['writable'] && $v['formType'] != 'password';
+                return $v['writable'] && $v['form_type'] != 'password';
             })
             ->pluck('name')
             ->map(function ($v) {
@@ -334,19 +334,38 @@ EOT;
             })
             ->pluck('comment')
             ->map(function ($v) {
-                return "<th scope=\"col\">{$v}</th>";
+                return <<<EOT
+                  <th scope="col">{$v}</th>
+EOT;
             })
-            ->implode("\n                  ");
+            ->implode("\n");
+
+        $heads = "\n{$heads}\n";
 
         $bodies = collect($columns)
             ->filter(function ($v) {
                 return $v['readable'];
             })
-            ->pluck('name')
             ->map(function ($v) {
-                return "<td>@{{ v.{$v} }}</td>";
+                if ($v['form_type'] == 'file') {
+                    $td = <<<EOT
+                  <td>
+                    <a :href="v.{$v['name']}" target="_blank">
+                      @{{ v.{$v['name']} }}
+                    </a>
+                  </td>
+EOT;
+                } else {
+                    $td = <<<EOT
+                  <td>@{{ v.{$v['name']} }}</td>
+EOT;
+                }
+
+                return $td;
             })
-            ->implode("\n                  ");
+            ->implode("\n");
+
+        $bodies = "\n{$bodies}\n";
 
         $replace = [
             $module,
@@ -390,19 +409,19 @@ EOT;
                 return $v['writable'];
             })
             ->map(function ($v) use ($model) {
-                if ($v['formType'] == 'password') {
+                if ($v['form_type'] == 'password') {
                     $form = <<<EOT
           <form-item label="{$v['comment']}" prop="{{ \${$model}->id ? '' : '{$v['name']}' }}">
             <i-input type="password" v-model="formValidate.{$v['name']}" placeholder="{{ \${$model}->id ? '为空则不修改' : '请输入{$v['comment']}' }}" clearable></i-input>
           </form-item>
 EOT;
-                } elseif ($v['formType'] == 'number') {
+                } elseif ($v['form_type'] == 'number') {
                     $form = <<<EOT
           <form-item label="{$v['comment']}" prop="{$v['name']}">
             <input-number :min="0" v-model="formValidate.{$v['name']}" class="w-100"></input-number>
           </form-item>
 EOT;
-                } elseif ($v['formType'] == 'file') {
+                } elseif ($v['form_type'] == 'file') {
                     $form = <<<EOT
           <form-item label="{$v['comment']}">
             <input ref="{$v['name']}" class="d-none" type="file" @change="e => handleFileChange(e, '{$v['name']}')">
