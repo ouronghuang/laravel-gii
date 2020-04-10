@@ -557,7 +557,9 @@ EOT;
                 if ('password' == $v['form_type']) {
                     $form = "{$v['name']}: '',";
                 } else {
-                    $form = "{$v['name']}: _.get(this.info, '{$v['name']}', ''),";
+                    $v['default'] = is_numeric($v['default']) ? (int)$v['default'] : "'{$v['default']}'";
+
+                    $form = "{$v['name']}: _.get(this.info, '{$v['name']}', {$v['default']}),";
                 }
 
                 return $form;
