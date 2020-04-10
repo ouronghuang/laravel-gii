@@ -153,7 +153,7 @@ class GiiController
 
         $password = collect($columns)
             ->filter(function ($v) {
-                return $v['form_type'] == 'password';
+                return 'password' == $v['form_type'];
             })
             ->pluck('name')
             ->map(function ($v) {
@@ -169,7 +169,7 @@ EOT;
 
         $columns = collect($columns)
             ->filter(function ($v) {
-                return $v['writable'] && $v['form_type'] != 'password';
+                return $v['writable'] && 'password' != $v['form_type'];
             })
             ->pluck('name')
             ->map(function ($v) {
@@ -271,7 +271,7 @@ EOT;
 
         $rules = collect($columns)
             ->filter(function ($v) {
-                return $v['validation'] && $v['form_type'] != 'password';
+                return $v['validation'] && 'password' != $v['form_type'];
             })
             ->map(function ($v) use ($table) {
                 $rule = "'{$v['name']}' => '{$v['rules']}";
@@ -295,7 +295,7 @@ EOT;
 
         $createRules = collect($columns)
             ->filter(function ($v) {
-                return $v['form_type'] == 'password';
+                return 'password' == $v['form_type'];
             })
             ->map(function ($v) use ($table) {
                 return "\$rules['{$v['name']}'] = 'required|string';";
@@ -350,14 +350,6 @@ EOT;
     {
         $path = "resources/views/{$module}/{$table}/index.blade.php";
 
-        $search = [
-            'DummyModule',
-            'DummyComment',
-            'DummyTable',
-            'DummyHeads',
-            'DummyBodies',
-        ];
-
         $heads = collect($columns)
             ->filter(function ($v) {
                 return $v['readable'];
@@ -377,7 +369,7 @@ EOT;
                 return $v['readable'];
             })
             ->map(function ($v) {
-                if ($v['form_type'] == 'file') {
+                if ('file' == $v['form_type']) {
                     $td = <<<EOT
                   <td>
                     <a :href="v.{$v['name']}" target="_blank">
@@ -396,6 +388,14 @@ EOT;
             ->implode("\n");
 
         $bodies = "\n{$bodies}\n";
+
+        $search = [
+            'DummyModule',
+            'DummyComment',
+            'DummyTable',
+            'DummyHeads',
+            'DummyBodies',
+        ];
 
         $replace = [
             $module,
@@ -439,19 +439,19 @@ EOT;
                 return $v['writable'];
             })
             ->map(function ($v) use ($model) {
-                if ($v['form_type'] == 'password') {
+                if ('password' == $v['form_type']) {
                     $form = <<<EOT
           <form-item label="{$v['comment']}" prop="{{ \${$model}->id ? '' : '{$v['name']}' }}">
             <i-input type="password" v-model="formValidate.{$v['name']}" placeholder="{{ \${$model}->id ? '为空则不修改' : '请输入{$v['comment']}' }}" clearable></i-input>
           </form-item>
 EOT;
-                } elseif ($v['form_type'] == 'number') {
+                } elseif ('number' == $v['form_type']) {
                     $form = <<<EOT
           <form-item label="{$v['comment']}" prop="{$v['name']}">
             <input-number :min="0" v-model="formValidate.{$v['name']}" class="w-100"></input-number>
           </form-item>
 EOT;
-                } elseif ($v['form_type'] == 'file') {
+                } elseif ('file' == $v['form_type']) {
                     $form = <<<EOT
           <form-item label="{$v['comment']}">
             <input ref="{$v['name']}" class="d-none" type="file" @change="e => handleFileChange(e, '{$v['name']}')">
@@ -502,17 +502,54 @@ EOT;
      */
     protected function buildRoute($module, $table)
     {
-        $path = "routes/{$module}.php";
+        $path = 'routes/'.($module ?: 'web').'.php';
 
         $this->createStub('route', $path);
 
-        $controller = str_plural($table).'Controller';
+        $controller = studly_case($table).'Controller';
 
-        $stub = $this->file->get(base_path($path));
+        $content = "\nRoute::resource('{$table}', '{$controller}')->only(['index', 'create', 'store', 'edit', 'update', 'destroy']);\n";
 
-        $stub .= "\nRoute::resource('{$table}', '{$controller}')->only(['index', 'create', 'store', 'edit', 'update', 'destroy']);\n";
+        $this->appendStub($path, $content);
 
-        $this->file->put(base_path($path), $stub);
+        return $path;
+    }
+
+    /**
+     * 创建 JS 文件.
+     *
+     * @param string $module
+     * @param string $table
+     * @param array  $columns
+     *
+     * @return string
+     */
+    protected function buildJs($module, $table, $columns)
+    {
+        $base = 'resources/assets/js/'.$module ?: 'views';
+        $path = "{$base}/{$table}.js";
+        $pathIndex = "{$base}/index.js";
+
+        $forms = '';
+        $rules = '';
+
+        $search = [
+            'DummyModule',
+            'DummyTable',
+            'dummyModule',
+            'DummyForms',
+            'DummyRules',
+        ];
+
+        $replace = [
+            $module ? "-{$module}" : '',
+            $table,
+            $module ? "/{$module}" : '',
+            $forms,
+            $rules,
+        ];
+
+        $this->createStub('js', $path, $search, $replace);
 
         return $path;
     }
@@ -538,6 +575,25 @@ EOT;
         $stub = $this->file->get(__DIR__."/../../../stubs/{$type}.stub");
 
         $stub = str_replace($search, $replace, $stub);
+
+        $this->file->put($path, $stub);
+    }
+
+    /**
+     * 给相应文件追加内容.
+     *
+     * @param string $path
+     * @param string $content
+     *
+     * @return void
+     */
+    protected function appendStub($path, $content)
+    {
+        $path = base_path($path);
+
+        $stub = $this->file->get($path);
+
+        $stub .= $content;
 
         $this->file->put($path, $stub);
     }
