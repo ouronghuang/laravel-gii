@@ -106,7 +106,19 @@ class GiiController
 
                 $tmp .= $v['nullable'] ? '->nullable()' : '';
 
-                $tmp .= strlen($v['default']) ? "->default('{$v['default']}')" : '';
+                if (strlen($v['default'])) {
+                    if (is_numeric($v['default'])) {
+                        $v['default'] = (int)$v['default'];
+                    } else {
+                        $v['default'] = "'{$v['default']}'";
+                    }
+
+                    if ($v['type'] == 'boolean') {
+                        $v['default'] = (boolean)$v['default'];
+                    }
+
+                    $tmp .= "->default({$v['default']})";
+                }
 
                 $tmp .= strlen($v['comment']) ? "->comment('{$v['comment']}')" : '';
 
