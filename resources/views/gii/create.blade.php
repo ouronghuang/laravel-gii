@@ -208,9 +208,21 @@
           </div>
         </div>
       </i-form>
-      <div class="mb-4" v-if="list.length">
-        <alert>
-          共生成
+      <div v-if="list.length">
+        <alert type="warning" show-icon>
+          1. 请自行引入 JS 文件
+          <code>
+            resources/assets/js/@{{ formValidate.module || 'views' }}/index.js
+          </code>
+        </alert>
+        <alert type="warning" show-icon>
+          2. 请自行引入路由文件
+          <code>
+            routes/@{{ formValidate.module || 'web' }}.php
+          </code>
+        </alert>
+        <alert type="success" show-icon>
+          3. 共生成
           @{{ list.length }}
           个文件
         </alert>
@@ -220,6 +232,18 @@
             @{{ v }}
           </kbd>
         </div>
+        <alert type="success" show-icon>
+          4. 运行迁移命令
+          <code>
+            php artisan migrate
+          </code>
+        </alert>
+        <alert type="success" show-icon>
+          5. 运行编译命令
+          <code>
+            npm run dev
+          </code>
+        </alert>
       </div>
     </div>
     <div>
