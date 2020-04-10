@@ -1,4 +1,4 @@
-Vue.component('vDummyComponentPrefix-DummyComponent', {
+Vue.component('vDummyComponentPrefix-DummyComponentName', {
   data() {
     return {
       list: [],
@@ -94,7 +94,7 @@ Vue.component('vDummyComponentPrefix-DummyComponent', {
   }
 });
 
-Vue.component('vDummyComponentPrefix-DummyComponent-action', {
+Vue.component('vDummyComponentPrefix-DummyComponentName-action', {
   props: [
     'info'
   ],

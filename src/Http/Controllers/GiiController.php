@@ -561,7 +561,7 @@ EOT;
 
         $search = [
             'DummyComponentPrefix',
-            'DummyComponent',
+            'DummyComponentName',
             'DummyTable',
             'DummyUrl',
             'DummyForms',
