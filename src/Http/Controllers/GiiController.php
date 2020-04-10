@@ -39,9 +39,9 @@ class GiiController
         // $data[] = $this->buildResource($module, $table, $columns);
         // $data[] = $this->buildRequest($module, $table, $columns);
         // $data[] = $this->buildViewIndex($module, $table, $comment, $columns);
-        // $data[] = $this->buildViewAction($module, $table, $comment, $columns);
+        $data[] = $this->buildViewAction($module, $table, $comment, $columns);
         // $data[] = $this->buildRoute($module, $table);
-        $data[] = $this->buildJs($module, $table, $columns);
+        // $data[] = $this->buildJs($module, $table, $columns);
 
         return $data;
     }
@@ -427,15 +427,6 @@ EOT;
 
         $model = camel_case(str_singular($table));
 
-        $search = [
-            'DummyModule',
-            'dummyModule',
-            'DummyModel',
-            'DummyComment',
-            'DummyTable',
-            'DummyForms',
-        ];
-
         $forms = collect($columns)
             ->filter(function ($v) {
                 return $v['writable'];
@@ -481,12 +472,21 @@ EOT;
 
         $forms = "\n{$forms}\n";
 
+        $search = [
+            'DummyLayout',
+            'DummyComponentPrefix',
+            'DummyModel',
+            'DummyComment',
+            'DummyTable',
+            'DummyForms',
+        ];
+
         $replace = [
-            $module,
+            $module ? "{$module}." : '',
             $module ? "-{$module}" : '',
             $model,
             $comment,
-            $table,
+            str_replace('_', '-', $table),
             $forms,
         ];
 

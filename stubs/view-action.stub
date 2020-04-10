@@ -1,9 +1,9 @@
-@extends('DummyModule.layouts.app')
+@extends('DummyLayoutlayouts.app')
 
 @section('title', $DummyModel->id ? '编辑DummyComment' : '新增DummyComment')
 
 @section('content')
-  <vdummyModule-DummyTable-action :info="{{ $DummyModel }}" inline-template>
+  <vDummyComponentPrefix-DummyTable-action :info="{{ $DummyModel }}" inline-template>
     <div class="row justify-content-center">
       <div class="col-60 col-sm-20">
         <i-form ref="formValidate" :model="formValidate" :rules="ruleValidate" label-position="top">
@@ -14,5 +14,5 @@
         </i-form>
       </div>
     </div>
-  </vdummyModule-DummyTable-action>
+  </vDummyComponentPrefix-DummyTable-action>
 @endsection
