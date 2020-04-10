@@ -7,8 +7,6 @@ use Illuminate\Support\ServiceProvider as LaravelServiceProvider;
 
 class ServiceProvider extends LaravelServiceProvider
 {
-    protected $defer = true;
-
     public function boot()
     {
         Route::group([
