@@ -477,7 +477,7 @@ EOT;
             'DummyComponentPrefix',
             'DummyModel',
             'DummyComment',
-            'DummyTable',
+            'DummyComponentName',
             'DummyForms',
         ];
 

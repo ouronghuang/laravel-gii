@@ -3,7 +3,7 @@
 @section('title', $DummyModel->id ? '编辑DummyComment' : '新增DummyComment')
 
 @section('content')
-  <vDummyComponentPrefix-DummyTable-action :info="{{ $DummyModel }}" inline-template>
+  <vDummyComponentPrefix-DummyComponentName-action :info="{{ $DummyModel }}" inline-template>
     <div class="row justify-content-center">
       <div class="col-60 col-sm-20">
         <i-form ref="formValidate" :model="formValidate" :rules="ruleValidate" label-position="top">
@@ -14,5 +14,5 @@
         </i-form>
       </div>
     </div>
-  </vDummyComponentPrefix-DummyTable-action>
+  </vDummyComponentPrefix-DummyComponentName-action>
 @endsection
