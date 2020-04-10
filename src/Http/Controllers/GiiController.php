@@ -31,19 +31,17 @@ class GiiController
                 return $v;
             });
 
-        $data = [];
-
-        // $data[] = $this->buildModel($table, $columns);
-        // $data[] = $this->buildMigration($table, $columns);
-        // $data[] = $this->buildController($module, $table, $columns);
-        // $data[] = $this->buildResource($module, $table, $columns);
-        // $data[] = $this->buildRequest($module, $table, $columns);
-        $data[] = $this->buildViewIndex($module, $table, $comment, $columns);
-        // $data[] = $this->buildViewAction($module, $table, $comment, $columns);
-        // $data[] = $this->buildRoute($module, $table);
-        // $data[] = $this->buildJs($module, $table, $columns);
-
-        return $data;
+        return [
+            $this->buildModel($table, $columns),
+            $this->buildMigration($table, $columns),
+            $this->buildController($module, $table, $columns),
+            $this->buildResource($module, $table, $columns),
+            $this->buildRequest($module, $table, $columns),
+            $this->buildViewIndex($module, $table, $comment, $columns),
+            $this->buildViewAction($module, $table, $comment, $columns),
+            $this->buildRoute($module, $table),
+            $this->buildJs($module, $table, $columns),
+        ];
     }
 
     /**
