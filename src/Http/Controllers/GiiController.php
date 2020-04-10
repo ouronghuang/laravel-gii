@@ -40,7 +40,8 @@ class GiiController
         // $data[] = $this->buildRequest($module, $table, $columns);
         // $data[] = $this->buildViewIndex($module, $table, $comment, $columns);
         // $data[] = $this->buildViewAction($module, $table, $comment, $columns);
-        $data[] = $this->buildRoute($module, $table);
+        // $data[] = $this->buildRoute($module, $table);
+        $data[] = $this->buildJs($module, $table, $columns);
 
         return $data;
     }
@@ -428,6 +429,7 @@ EOT;
 
         $search = [
             'DummyModule',
+            'dummyModule',
             'DummyModel',
             'DummyComment',
             'DummyTable',
@@ -481,6 +483,7 @@ EOT;
 
         $replace = [
             $module,
+            $module ? "-{$module}" : '',
             $model,
             $comment,
             $table,
@@ -526,17 +529,41 @@ EOT;
      */
     protected function buildJs($module, $table, $columns)
     {
-        $base = 'resources/assets/js/'.$module ?: 'views';
+        $table = str_replace('_', '-', $table);
+
+        $base = 'resources/assets/js/'.($module ?: 'views');
         $path = "{$base}/{$table}.js";
         $pathIndex = "{$base}/index.js";
 
-        $forms = '';
-        $rules = '';
+        $forms = collect($columns)
+            ->filter(function ($v) {
+                return $v['writable'];
+            })
+            ->map(function ($v) {
+                if ('password' == $v['form_type']) {
+                    $form = "{$v['name']}: '',";
+                } else {
+                    $form = "{$v['name']}: _.get(this.info, '{$v['name']}', ''),";
+                }
+
+                return $form;
+            })
+            ->implode("\n        ");
+
+        $rules = collect($columns)
+            ->filter(function ($v) {
+                return $v['validation'];
+            })
+            ->map(function ($v) {
+                return "{$v['name']}: {required: true, message: '请输入{$v['comment']}', trigger: 'change'},";
+            })
+            ->implode("\n        ");
 
         $search = [
-            'DummyModule',
+            'DummyComponentPrefix',
+            'DummyComponent',
             'DummyTable',
-            'dummyModule',
+            'DummyUrl',
             'DummyForms',
             'DummyRules',
         ];
@@ -544,12 +571,17 @@ EOT;
         $replace = [
             $module ? "-{$module}" : '',
             $table,
+            str_replace('-', '_', $table),
             $module ? "/{$module}" : '',
             $forms,
             $rules,
         ];
 
         $this->createStub('js', $path, $search, $replace);
+
+        $this->createStub('js-index', $pathIndex);
+
+        $this->appendStub($pathIndex, "require('./{$table}');\n");
 
         return $path;
     }

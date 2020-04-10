@@ -1,4 +1,4 @@
-Vue.component('vDummyModule-DummyTable', {
+Vue.component('vDummyComponentPrefix-DummyComponent', {
   data() {
     return {
       list: [],
@@ -94,7 +94,7 @@ Vue.component('vDummyModule-DummyTable', {
   }
 });
 
-Vue.component('vDummyModule-DummyTable-action', {
+Vue.component('vDummyComponentPrefix-DummyComponent-action', {
   props: [
     'info'
   ],
@@ -112,7 +112,7 @@ Vue.component('vDummyModule-DummyTable-action', {
   },
   mounted() {
     this.method = 'post';
-    this.uri = 'dummyModule/DummyTable';
+    this.uri = 'DummyUrl/DummyTable';
 
     if (_.get(this.info, 'id')) {
       this.method = 'patch';
@@ -157,7 +157,7 @@ Vue.component('vDummyModule-DummyTable-action', {
 
       form.append('file', file, file.name);
 
-      this.$http.post('dummyModule/upload', form)
+      this.$http.post('DummyUrl/upload', form)
           .then(({data}) => {
             this.formValidate[item] = data.link;
           });
