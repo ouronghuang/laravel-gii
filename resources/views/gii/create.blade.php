@@ -305,7 +305,7 @@
           'text',
           'password',
           'number',
-          'file',
+          'file'
         ],
         list: []
       },
@@ -329,6 +329,10 @@
                   this.list = data;
 
                   this.loading = false;
+
+                  setTimeout(() => {
+                    window.scrollTo(0, document.body.scrollHeight);
+                  }, 500);
                 })
                 .catch(({response}) => {
                   this.$Message.error(response.data.message);
