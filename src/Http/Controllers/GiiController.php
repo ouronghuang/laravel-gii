@@ -7,6 +7,13 @@ use Illuminate\Http\Request;
 
 class GiiController
 {
+    protected $file;
+
+    public function __construct()
+    {
+        $this->file = app(Filesystem::class);
+    }
+
     public function create()
     {
         return view('gii::gii.create');
@@ -26,13 +33,14 @@ class GiiController
 
         $data = [];
 
-        $data[] = $this->buildModel($table, $columns);
-        $data[] = $this->buildMigration($table, $columns);
-        $data[] = $this->buildController($module, $table, $columns);
-        $data[] = $this->buildResource($module, $table, $columns);
-        $data[] = $this->buildRequest($module, $table, $columns);
-        $data[] = $this->buildViewIndex($module, $table, $comment, $columns);
-        $data[] = $this->buildViewAction($module, $table, $comment, $columns);
+        // $data[] = $this->buildModel($table, $columns);
+        // $data[] = $this->buildMigration($table, $columns);
+        // $data[] = $this->buildController($module, $table, $columns);
+        // $data[] = $this->buildResource($module, $table, $columns);
+        // $data[] = $this->buildRequest($module, $table, $columns);
+        // $data[] = $this->buildViewIndex($module, $table, $comment, $columns);
+        // $data[] = $this->buildViewAction($module, $table, $comment, $columns);
+        $data[] = $this->buildRoute($module, $table);
 
         return $data;
     }
@@ -485,6 +493,31 @@ EOT;
     }
 
     /**
+     * 创建路由文件.
+     *
+     * @param string $module
+     * @param string $table
+     *
+     * @return string
+     */
+    protected function buildRoute($module, $table)
+    {
+        $path = "routes/{$module}.php";
+
+        $this->createStub('route', $path);
+
+        $controller = str_plural($table).'Controller';
+
+        $stub = $this->file->get(base_path($path));
+
+        $stub .= "\nRoute::resource('{$table}', '{$controller}')->only(['index', 'create', 'store', 'edit', 'update', 'destroy']);\n";
+
+        $this->file->put(base_path($path), $stub);
+
+        return $path;
+    }
+
+    /**
      * 生成相应文件.
      *
      * @param string $type
@@ -496,19 +529,17 @@ EOT;
      */
     protected function createStub($type, $path, $search = [], $replace = [])
     {
-        $file = app(Filesystem::class);
-
-        if ($file->exists($path = base_path($path))) {
+        if ($this->file->exists($path = base_path($path))) {
             return;
         }
 
         $this->mkdir($path);
 
-        $stub = $file->get(__DIR__."/../../../stubs/{$type}.stub");
+        $stub = $this->file->get(__DIR__."/../../../stubs/{$type}.stub");
 
         $stub = str_replace($search, $replace, $stub);
 
-        $file->put($path, $stub);
+        $this->file->put($path, $stub);
     }
 
     /**
