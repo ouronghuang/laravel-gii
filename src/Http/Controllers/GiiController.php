@@ -384,7 +384,7 @@ EOT;
                     $td = <<<EOT
                   <td>
                     <a :href="v.{$v['name']}" target="_blank">
-                      @{{ v.{$v['name']} }}
+                      点击打开文件
                     </a>
                   </td>
 EOT;
@@ -468,7 +468,7 @@ EOT;
           </form-item>
           <form-item label="{$v['comment']}预览" v-if="formValidate.{$v['name']}">
             <a :href="formValidate.{$v['name']}" target="_blank">
-              @{{ formValidate.{$v['name']} }}
+              点击打开文件
             </a>
           </form-item>
 EOT;
