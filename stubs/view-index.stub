@@ -1,13 +1,13 @@
-@extends('DummyModule.layouts.app')
+@extends('DummyLayoutlayouts.app')
 
 @section('title', 'DummyComment管理')
 
 @section('content')
-  <v-DummyModule-DummyTable inline-template>
+  <vDummyComponentPrefix-DummyComponentName inline-template>
     <div>
       <div class="row">
         <div class="col">
-          <i-button type="primary" to="{{ route('DummyModule.DummyTable.create') }}">新增</i-button>
+          <i-button type="primary" to="{{ route('DummyLayoutDummyTable.create') }}">新增</i-button>
         </div>
         <div class="col-auto">
           <i-input icon="ios-search" clearable v-model="search.k" @on-change="getList" placeholder="请输入关键字"></i-input>
@@ -74,5 +74,5 @@
         </div>
       </div>
     </div>
-  </v-DummyModule-DummyTable>
+  </vDummyComponentPrefix-DummyComponentName>
 @endsection

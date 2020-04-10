@@ -38,8 +38,8 @@ class GiiController
         // $data[] = $this->buildController($module, $table, $columns);
         // $data[] = $this->buildResource($module, $table, $columns);
         // $data[] = $this->buildRequest($module, $table, $columns);
-        // $data[] = $this->buildViewIndex($module, $table, $comment, $columns);
-        $data[] = $this->buildViewAction($module, $table, $comment, $columns);
+        $data[] = $this->buildViewIndex($module, $table, $comment, $columns);
+        // $data[] = $this->buildViewAction($module, $table, $comment, $columns);
         // $data[] = $this->buildRoute($module, $table);
         // $data[] = $this->buildJs($module, $table, $columns);
 
@@ -391,16 +391,20 @@ EOT;
         $bodies = "\n{$bodies}\n";
 
         $search = [
-            'DummyModule',
+            'DummyLayout',
             'DummyComment',
+            'DummyComponentPrefix',
+            'DummyComponentName',
             'DummyTable',
             'DummyHeads',
             'DummyBodies',
         ];
 
         $replace = [
-            $module,
+            $module ? "{$module}." : '',
             $comment,
+            $module ? "-{$module}" : '',
+            str_replace('_', '-', $table),
             $table,
             $heads,
             $bodies,
