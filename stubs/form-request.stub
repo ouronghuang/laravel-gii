@@ -6,9 +6,17 @@ class DummyClass extends FormRequest
 {
     public function rules()
     {
-        return [
+        $rules = [
             DummyRule
         ];
+
+        if (in_array($this->method(), ['PUT', 'PATCH'])) {
+            DummyEditRules
+        } else {
+            DummyCreateRules
+        }
+
+        return $rules;
     }
 
     public function attributes()

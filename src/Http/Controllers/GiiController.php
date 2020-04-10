@@ -26,11 +26,11 @@ class GiiController
 
         $data = [];
 
-        // $data[] = $this->buildModel($table, $columns);
-        // $data[] = $this->buildMigration($table, $columns);
-        // $data[] = $this->buildController($module, $table, $columns);
-        // $data[] = $this->buildResource($module, $table, $columns);
-        // $data[] = $this->buildRequest($module, $table, $columns);
+        $data[] = $this->buildModel($table, $columns);
+        $data[] = $this->buildMigration($table, $columns);
+        $data[] = $this->buildController($module, $table, $columns);
+        $data[] = $this->buildResource($module, $table, $columns);
+        $data[] = $this->buildRequest($module, $table, $columns);
         $data[] = $this->buildViewIndex($module, $table, $comment, $columns);
         $data[] = $this->buildViewAction($module, $table, $comment, $columns);
 
@@ -263,16 +263,34 @@ EOT;
 
         $rules = collect($columns)
             ->filter(function ($v) {
-                return $v['validation'];
+                return $v['validation'] && $v['form_type'] != 'password';
             })
             ->map(function ($v) use ($table) {
                 $rule = "'{$v['name']}' => '{$v['rules']}";
 
-                $rule .= $v['unique'] ? "|unique:{$table},{$v['name']},'".'.$this->input(\'id\')' : "'";
+                $rule .= $v['unique'] ? "|unique:{$table},{$v['name']}" : '';
 
-                $rule .= ',';
+                $rule .= "',";
 
                 return $rule;
+            })
+            ->implode("\n            ");
+
+        $editRules = collect($columns)
+            ->filter(function ($v) {
+                return $v['unique'];
+            })
+            ->map(function ($v) use ($table) {
+                return "\$rules['{$v['name']}'] .= ','.\$this->input('id');";
+            })
+            ->implode("\n            ");
+
+        $createRules = collect($columns)
+            ->filter(function ($v) {
+                return $v['form_type'] == 'password';
+            })
+            ->map(function ($v) use ($table) {
+                return "\$rules['{$v['name']}'] = 'required|string';";
             })
             ->implode("\n            ");
 
@@ -289,6 +307,8 @@ EOT;
             'DummyModule',
             'DummyClass',
             'DummyRule',
+            'DummyEditRules',
+            'DummyCreateRules',
             'DummyAttribute',
         ];
 
@@ -296,6 +316,8 @@ EOT;
             $module ? "\\{$module}" : '',
             $dummyClass,
             $rules,
+            $editRules,
+            $createRules,
             $attributes,
         ];
 
