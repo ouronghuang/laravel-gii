@@ -1,3 +1,5 @@
+![Example](./images/example.jpg)
+
 ## 安装
 
 ```shell
