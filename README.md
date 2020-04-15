@@ -1,4 +1,4 @@
-![Example](./images/example.jpg)
+![Example](./images/example.jpg?t=1586922837)
 
 ## 安装
 
